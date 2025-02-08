@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>Цикл Ом: Анализ паков (130, 140, 250 OR)</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Цикл Ом: Анализ паков (130, 140, 250 OR)</h1>
+    <div class="tabs">
+      <button onclick="showTab('packsTab')">Паки (цены)</button>
+      <button onclick="showTab('resourcesTab')">Реги (цены)</button>
+      <button onclick="showTab('resultsTab')">Результаты</button>
+    </div>
+
+    <!-- Вкладка для паков -->
+    <div id="packsTab" class="tab active">
+      <h2>Измени или оставь цену паков:</h2>
+      <form id="packsForm"></form>
+    </div>
+
+    <!-- Вкладка для регов -->
+    <div id="resourcesTab" class="tab">
+      <h2>Измени или оставь цену регов:</h2>
+      <form id="resourcesForm"></form>
+    </div>
+
+    <!-- Вкладка для результатов -->
+    <div id="resultsTab" class="tab">
+      <h2>Результаты</h2>
+      <pre id="resultsOutput"></pre>
+    </div>
+
+    <button id="calculate" onclick="calculate()">Рассчитать</button>
+
+    <script src="script.js"></script>
+  </body>
+</html>
