@@ -3,89 +3,165 @@
   <head>
     <meta charset="UTF-8">
     <title>Цикл Ом: Анализ паков (130, 140, 250 OR)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
+      * {
+        box-sizing: border-box;
       }
-      h1, h2 {
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
         color: #333;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 30px 40px;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      }
+      header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        color: #222;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+        color: #555;
       }
       .tabs {
-        margin-bottom: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 25px;
       }
       .tabs button {
-        padding: 10px 15px;
-        margin-right: 5px;
+        background: #ff9a9e;
         border: none;
-        background: #ddd;
+        border-radius: 30px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: #fff;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background 0.3s, transform 0.2s;
       }
       .tabs button:hover {
-        background: #ccc;
+        background: #ff6f91;
+        transform: scale(1.05);
       }
       .tab {
         display: none;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
       }
       .tab.active {
         display: block;
       }
+      section h2 {
+        text-align: center;
+        color: #222;
+        margin-bottom: 15px;
+      }
       form div {
-        margin-bottom: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
-      label {
-        display: inline-block;
-        width: 250px;
+      form label {
+        font-weight: 600;
+        flex: 1;
       }
-      input[type="text"] {
-        width: 80px;
-        padding: 4px;
+      form input[type="text"] {
+        flex: 0 0 100px;
+        padding: 6px;
+        border: 2px solid #ff9a9e;
+        border-radius: 4px;
+        transition: border-color 0.3s;
+      }
+      form input[type="text"]:focus {
+        outline: none;
+        border-color: #ff6f91;
+      }
+      .button-wrapper {
+        text-align: center;
       }
       #calculate {
-        padding: 10px 20px;
-        font-size: 16px;
-        margin-top: 10px;
+        background: #ff9a9e;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.3s, box-shadow 0.3s;
+      }
+      #calculate:hover {
+        background: #ff6f91;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       }
       pre {
-        background: #f4f4f4;
-        border: 1px solid #ccc;
-        padding: 10px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 6px;
         white-space: pre-wrap;
+        max-height: 300px;
+        overflow: auto;
       }
     </style>
   </head>
   <body>
-    <h1>Цикл Ом: Анализ паков (130, 140, 250 OR)</h1>
-    <div class="tabs">
-      <button onclick="showTab('packsTab')">Паки (цены)</button>
-      <button onclick="showTab('resourcesTab')">Реги (цены)</button>
-      <button onclick="showTab('resultsTab')">Результаты</button>
-    </div>
+    <div class="container">
+      <header>
+        <h1>Цикл Ом: Анализ паков</h1>
+        <p class="subtitle">(130, 140, 250 OR)</p>
+      </header>
+      
+      <nav class="tabs">
+        <button onclick="showTab('packsTab')">Паки (цены)</button>
+        <button onclick="showTab('resourcesTab')">Реги (цены)</button>
+        <button onclick="showTab('resultsTab')">Результаты</button>
+      </nav>
 
-    <!-- Вкладка для паков -->
-    <div id="packsTab" class="tab active">
-      <h2>Измени или оставь цену паков:</h2>
-      <form id="packsForm"></form>
-    </div>
+      <!-- Вкладка для паков -->
+      <section id="packsTab" class="tab active">
+        <h2>Измени цены паков</h2>
+        <form id="packsForm"></form>
+      </section>
 
-    <!-- Вкладка для регов -->
-    <div id="resourcesTab" class="tab">
-      <h2>Измени или оставь цену регов:</h2>
-      <form id="resourcesForm"></form>
-    </div>
+      <!-- Вкладка для регов -->
+      <section id="resourcesTab" class="tab">
+        <h2>Измени цены регов</h2>
+        <form id="resourcesForm"></form>
+      </section>
 
-    <!-- Вкладка для результатов -->
-    <div id="resultsTab" class="tab">
-      <h2>Результаты</h2>
-      <pre id="resultsOutput"></pre>
-    </div>
+      <!-- Вкладка для результатов -->
+      <section id="resultsTab" class="tab">
+        <h2>Результаты</h2>
+        <pre id="resultsOutput"></pre>
+      </section>
 
-    <button id="calculate" onclick="calculate()">Рассчитать</button>
+      <div class="button-wrapper">
+        <button id="calculate" onclick="calculate()">Рассчитать</button>
+      </div>
+    </div>
 
     <script>
       var packs_all = [
+        // Пакеты с затратами 250 OR
         { "name": "Банановое повидло", "sell_price": 29, "labor": 250, "resources": [["овощи", 300], ["банан", 5]] },
         { "name": "Набивка для тюфяка", "sell_price": 30, "labor": 250, "resources": [["порошок", 300], ["гусиное перо", 10]] },
         { "name": "Хрустящие лепешки", "sell_price": 29, "labor": 250, "resources": [["злаки", 300], ["молоко", 5]] },
@@ -127,7 +203,7 @@
         { "name": "Мятные рогалики", "sell_price": 17, "labor": 140, "resources": [["злаки", 150], ["мята", 5]] },
         { "name": "Оладьи из батата", "sell_price": 19, "labor": 140, "resources": [["лепестки", 160], ["батат", 5]] }
       ];
-
+      
       var default_resource_prices = {
         "овощи": 0.03,
         "банан": 0.05,
@@ -167,7 +243,7 @@
         "василёк": 0.12,
         "батат": 0.07,
       };
-
+      
       // Собираем список уникальных регов
       var unique_resources = [];
       (function() {
@@ -179,7 +255,7 @@
         });
         unique_resources = Array.from(resSet).sort();
       })();
-
+      
       function initForms() {
         var packsForm = document.getElementById("packsForm");
         packs_all.forEach(function(pack, index) {
@@ -187,7 +263,7 @@
           div.innerHTML = '<label>' + pack.name + ':</label> <input type="text" id="pack_' + index + '" value="' + pack.sell_price + '">';
           packsForm.appendChild(div);
         });
-
+      
         var resourcesForm = document.getElementById("resourcesForm");
         unique_resources.forEach(function(res) {
           var defaultPrice = default_resource_prices[res] || 0;
@@ -196,7 +272,7 @@
           resourcesForm.appendChild(div);
         });
       }
-
+      
       function showTab(tabId) {
         var tabs = document.getElementsByClassName("tab");
         for (var i = 0; i < tabs.length; i++) {
@@ -204,26 +280,26 @@
         }
         document.getElementById(tabId).classList.add("active");
       }
-
+      
       function calculate() {
         // Обновляем цены паков
         packs_all.forEach(function(pack, index) {
           var input = document.getElementById("pack_" + index);
           pack.sell_price = parseFloat(input.value);
         });
-
+      
         // Обновляем цены регов
         var resource_prices = {};
         unique_resources.forEach(function(res) {
           var input = document.getElementById("resource_" + res);
           resource_prices[res] = parseFloat(input.value);
         });
-
+      
         var results = [];
         var results_130 = [];
         var results_140 = [];
         var results_250 = [];
-
+      
         packs_all.forEach(function(pack) {
           var sell_price = pack.sell_price;
           var labor_cost = pack.labor;
@@ -253,7 +329,7 @@
             results_250.push(pack_result);
           }
         });
-
+      
         results.sort(function(a, b) {
           return a.efficiency - b.efficiency;
         });
@@ -266,12 +342,12 @@
         results_250.sort(function(a, b) {
           return a.efficiency - b.efficiency;
         });
-
+      
         var top5_all = results.slice(0, 5);
         var top5_130 = results_130.slice(0, 5);
         var top5_140 = results_140.slice(0, 5);
         var top5_250 = results_250.slice(0, 5);
-
+      
         var out_text = "ТОП-5 паков (все):\n";
         top5_all.forEach(function(r) {
           out_text += r.name + ": прибыль = " + r.profit.toFixed(2) + " голд, эффективность = " + r.efficiency.toFixed(2) + " OR/gold\n";
@@ -288,11 +364,11 @@
         top5_250.forEach(function(r) {
           out_text += r.name + ": прибыль = " + r.profit.toFixed(2) + " голд, эффективность = " + r.efficiency.toFixed(2) + " OR/gold\n";
         });
-
+      
         document.getElementById("resultsOutput").textContent = out_text;
         showTab("resultsTab");
       }
-
+      
       window.onload = initForms;
     </script>
   </body>
