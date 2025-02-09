@@ -2,7 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8">
-    </title>Анализ паков Вастока (130, 140, 250 OR)</title>
+    <title>Цикл Ом: Анализ паков (130, 140, 250 OR)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -37,7 +37,6 @@
       header h1 {
         margin: 0;
         font-size: 2.5rem;
-        /* Дополнительный цвет заголовков */
         color: #0d47a1;
       }
       .subtitle {
@@ -49,6 +48,7 @@
         justify-content: center;
         gap: 10px;
         margin-bottom: 25px;
+        flex-wrap: wrap;
       }
       .tabs button {
         background: #ff9a9e;
@@ -123,12 +123,26 @@
         max-height: 300px;
         overflow: auto;
       }
+      /* Стили для новой вкладки с деталями пака */
+      #singlePackTab select {
+        display: block;
+        margin: 0 auto 15px auto;
+        padding: 8px;
+        font-size: 1rem;
+      }
+      #packDetail {
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 6px;
+        white-space: pre-wrap;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>Анализ паков Востока</h1>
+        <h1>Цикл Ом: Анализ паков</h1>
         <p class="subtitle">(130, 140, 250 OR)</p>
       </header>
       
@@ -136,6 +150,7 @@
         <button onclick="showTab('packsTab')">Паки (цены)</button>
         <button onclick="showTab('resourcesTab')">Реги (цены)</button>
         <button onclick="showTab('resultsTab')">Результаты</button>
+        <button onclick="showTab('singlePackTab')">Детали пака</button>
       </nav>
 
       <!-- Вкладка для паков -->
@@ -154,6 +169,13 @@
       <section id="resultsTab" class="tab">
         <h2>Результаты</h2>
         <pre id="resultsOutput"></pre>
+      </section>
+      
+      <!-- Новая вкладка для детального просмотра каждого пака -->
+      <section id="singlePackTab" class="tab">
+        <h2>Детали выбранного пака</h2>
+        <select id="packSelect"></select>
+        <div id="packDetail">Выберите пак для просмотра деталей.</div>
       </section>
 
       <div class="button-wrapper">
@@ -246,6 +268,9 @@
         "батат": 0.07,
       };
       
+      // Глобальная переменная для хранения деталей каждого пака (в исходном порядке)
+      var calculatedDetails = [];
+      
       // Собираем список уникальных регов
       var unique_resources = [];
       (function() {
@@ -273,6 +298,16 @@
           div.innerHTML = '<label>' + res + ':</label> <input type="text" id="resource_' + res + '" value="' + defaultPrice + '">';
           resourcesForm.appendChild(div);
         });
+        
+        // Инициализация селектора для детальной информации о паке
+        var packSelect = document.getElementById("packSelect");
+        packs_all.forEach(function(pack, index) {
+          var option = document.createElement("option");
+          option.value = index;
+          option.textContent = pack.name;
+          packSelect.appendChild(option);
+        });
+        packSelect.addEventListener("change", updatePackDetail);
       }
       
       function showTab(tabId) {
@@ -284,51 +319,48 @@
       }
       
       function calculate() {
-        // Обновляем цены паков
+        var detailResults = [];
+        // Обновляем цены паков и рассчитываем их детали
         packs_all.forEach(function(pack, index) {
           var input = document.getElementById("pack_" + index);
           pack.sell_price = parseFloat(input.value);
-        });
-      
-        // Обновляем цены регов
-        var resource_prices = {};
-        unique_resources.forEach(function(res) {
-          var input = document.getElementById("resource_" + res);
-          resource_prices[res] = parseFloat(input.value);
-        });
-      
-        var results = [];
-        var results_130 = [];
-        var results_140 = [];
-        var results_250 = [];
-      
-        packs_all.forEach(function(pack) {
-          var sell_price = pack.sell_price;
-          var labor_cost = pack.labor;
           var total_resource_cost = 0;
           pack.resources.forEach(function(resourcePair) {
             var resName = resourcePair[0];
             var qty = resourcePair[1];
-            var price = resource_prices[resName] || 0;
+            var resInput = document.getElementById("resource_" + resName);
+            var price = parseFloat(resInput.value) || 0;
             total_resource_cost += qty * price;
           });
-          var profit = sell_price - total_resource_cost;
-          var efficiency = profit > 0 ? labor_cost / profit : Infinity;
+          var profit = pack.sell_price - total_resource_cost;
+          var efficiency = profit > 0 ? pack.labor / profit : Infinity;
           var pack_result = {
             name: pack.name,
-            sell_price: sell_price,
-            labor: labor_cost,
+            sell_price: pack.sell_price,
+            labor: pack.labor,
             resource_cost: total_resource_cost,
             profit: profit,
             efficiency: efficiency
           };
-          results.push(pack_result);
-          if (labor_cost === 130) {
-            results_130.push(pack_result);
-          } else if (labor_cost === 140) {
-            results_140.push(pack_result);
-          } else if (labor_cost === 250) {
-            results_250.push(pack_result);
+          detailResults.push(pack_result);
+        });
+        
+        // Сохраним расчетные данные для детальной вкладки (в исходном порядке)
+        calculatedDetails = detailResults.slice();
+      
+        // Вычисляем топ-5 по эффективности для каждой категории для вкладки "Результаты"
+        var results = detailResults.slice();
+        var results_130 = [];
+        var results_140 = [];
+        var results_250 = [];
+      
+        results.forEach(function(r) {
+          if (r.labor === 130) {
+            results_130.push(r);
+          } else if (r.labor === 140) {
+            results_140.push(r);
+          } else if (r.labor === 250) {
+            results_250.push(r);
           }
         });
       
@@ -368,7 +400,26 @@
         });
       
         document.getElementById("resultsOutput").textContent = out_text;
+        updatePackDetail();
         showTab("resultsTab");
+      }
+      
+      function updatePackDetail() {
+        var packSelect = document.getElementById("packSelect");
+        var selectedIndex = parseInt(packSelect.value);
+        var detailDiv = document.getElementById("packDetail");
+        if (calculatedDetails[selectedIndex]) {
+          var detail = calculatedDetails[selectedIndex];
+          var output = "Название: " + detail.name + "\n";
+          output += "Цена продажи: " + detail.sell_price.toFixed(2) + "\n";
+          output += "Затраты (labor): " + detail.labor + "\n";
+          output += "Стоимость ресурсов: " + detail.resource_cost.toFixed(2) + "\n";
+          output += "Прибыль: " + detail.profit.toFixed(2) + " голд\n";
+          output += "Эффективность: " + detail.efficiency.toFixed(2) + " OR/gold\n";
+          detailDiv.textContent = output;
+        } else {
+          detailDiv.textContent = "Нет данных для выбранного пака.";
+        }
       }
       
       window.onload = initForms;
